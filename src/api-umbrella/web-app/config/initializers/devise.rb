@@ -303,6 +303,29 @@ Devise.setup do |config|
         :service_validate_url => "/cas/serviceValidate",
         :logout_url => "/cas/logout",
         :ssl => true
+    when "login.gov"
+      require "omniauth-saml"
+      config.omniauth :saml, {
+        assertion_consumer_service_binding: 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+        # assertion_consumer_service_url: Rails.application.secrets.acs_url,
+        issuer: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:TTS:apidatagov",
+        idp_sso_target_url: "https://idp.int.login.gov/api/saml/auth",
+        idp_slo_target_url: "https://idp.int.login.gov/api/saml/logout",
+        idp_cert_fingerprint: "68:19:E0:CB:D2:44:A0:CD:B7:D1:80:8A:E2:34:E4:22:90:41:DF:10",
+        name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:persistent',
+        authn_context: 'http://idmanagement.gov/ns/assurance/loa/1',
+        allowed_clock_drift: 60,
+        certificate: File.read("#{Rails.root}/certs/sp/demo_sp.crt"),
+        private_key: File.read("#{Rails.root}/keys/saml_test_sp.key"),
+        security: {
+          authn_requests_signed: true,
+          logout_requests_signed: true,
+          embed_sign: true,
+          digest_method: 'http://www.w3.org/2001/04/xmlenc#sha256',
+          signature_method: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
+        },
+        setup: true
+      }
     when "local" # rubocop:disable Lint/EmptyWhen
       # Ignore
     else

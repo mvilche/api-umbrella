@@ -8,6 +8,7 @@ en:
     gitlab: GitLab
     google_oauth2: Google
     ldap: LDAP
+    saml: Login.gov
   errors:
     format: "%{attribute}: %{message}"
     messages:

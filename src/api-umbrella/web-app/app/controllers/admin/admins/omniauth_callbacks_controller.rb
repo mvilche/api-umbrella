@@ -1,5 +1,6 @@
 class Admin::Admins::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   skip_after_action :verify_authorized
+  skip_before_action :verify_authenticity_token, :only => [:saml]
 
   # For the developer strategy, simply find or create a new admin account with
   # whatever login details they give. This is not for use on production.
@@ -65,6 +66,11 @@ class Admin::Admins::OmniauthCallbacksController < Devise::OmniauthCallbacksCont
     uid_field = request.env["omniauth.strategy"].options[:uid]
     uid = [request.env["omniauth.auth"]["extra"]["raw_info"][uid_field]].flatten.compact.first
     @username = uid
+    login
+  end
+
+  def saml
+    @username = request.env["omniauth.auth"]["info"]["email"]
     login
   end
 
