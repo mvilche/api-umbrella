@@ -22,46 +22,38 @@ local function permission_check()
   if config["user"] then
     if effective_uid ~= 0 then
       print("Must be started with super-user privileges to change user to '" .. config["user"] .. "'")
-      os.exit(1)
     end
 
     local status, output, err = run_command({ "getent", "passwd", config["user"] })
     if status == 2 and output == "" then
       print("User '" .. (config["user"] or "") .. "' does not exist")
-      os.exit(1)
     elseif err then
       print(err)
-      os.exit(1)
     end
   end
 
   if config["group"] then
     if effective_uid ~= 0 then
       print("Must be started with super-user privileges to change group to '" .. config["group"] .. "'")
-      os.exit(1)
     end
 
     local status, output, err = run_command({ "getent", "group", config["group"] })
     if status == 2 and output == "" then
       print("Group '" .. (config["group"] or "") .. "' does not exist")
-      os.exit(1)
     elseif err then
       print(err)
-      os.exit(1)
     end
   end
 
   if config["http_port"] < 1024 or config["https_port"] < 1024 then
     if effective_uid ~= 0 then
       print("Must be started with super-user privileges to use http ports below 1024")
-      os.exit(1)
     end
   end
 
   if effective_uid == 0 and config["app_env"] ~= "test" then
     if not config["user"] or not config["group"] then
       print("Must define a user and group to run worker processes as when starting with with super-user privileges")
-      os.exit(1)
     end
   end
 end
